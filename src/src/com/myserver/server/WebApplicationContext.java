@@ -31,11 +31,26 @@ public class WebApplicationContext implements ServletContext {
 	
 	private Map<String, ServletWrapper> urlPatternMapping;
 	
-	public WebApplicationContext(String webAppName)
+	public WebApplicationContext()
 	{
-		this.webAppName = webAppName;
 		this.servlets = new HashMap<String, ServletWrapper>();
 		this.urlPatternMapping = new HashMap<String, ServletWrapper>();
+	}
+	
+	public WebApplicationContext(String webAppName)
+	{
+		this();
+		this.webAppName = webAppName;
+	}
+	
+	public void setWebAppName(String webAppName)
+	{
+		this.webAppName = webAppName;
+	}
+	
+	public String getWebAppName()
+	{
+		return webAppName;
 	}
 
 	public Dynamic addFilter(String arg0, String arg1) {
@@ -297,6 +312,14 @@ public class WebApplicationContext implements ServletContext {
 	public void setSessionTrackingModes(Set<SessionTrackingMode> arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void addServletUrlPattern(String requestUrl, ServletWrapper servletName) {
+		urlPatternMapping.put(requestUrl, servletName);
+	}
+	
+	public ServletWrapper getServletForUrlPattern(String requestUrl) {
+		return urlPatternMapping.get(requestUrl);
 	}
 
 }
