@@ -3,23 +3,14 @@ package com.myserver.start;
 import java.io.IOException;
 
 import com.myserver.server.HttpServer;
+import com.myserver.server.ServerContext;
 
 public class StartUp {
 	
 	public void start()
 	{
-		//look for load and parse web.xml
-		try 
-		{
-			new WebXMLParser("TestApp", "/Users/vivekt/Workspace/MyServer/TestApp/web.xml").parse();
-		} 
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			System.err.println("Couldn't parse web.xml");
-			e.printStackTrace();
-		} 
 		//get the jars and add to classpath
+		new Crawler(ServerContext.getInstance()).addAll();
 		
 		//all ready then start the server
 		try 
