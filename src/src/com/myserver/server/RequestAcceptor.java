@@ -6,34 +6,35 @@ import java.util.LinkedList;
 public class RequestAcceptor
 {
 	private final int nThreads = 200;
-    private final PoolWorker[] threads;
+    private final RequestHandler[] threads;
     private final LinkedList queue;
-    private RequestHandler handler;
+    private SocketProcessor processor;
  
-    public RequestAcceptor(Socket socket)
+    public RequestAcceptor()
     {
-    	handler = new RequestHandler();
+    	ServerContext instance = ServerContext.getInstance();
+    	processor = new SocketProcessor(instance);
         queue = new LinkedList();
-        threads = new PoolWorker[nThreads];
+        threads = new RequestHandler[nThreads];
  
-        for (int i=0; i<nThreads; i++) {
-            threads[i] = new PoolWorker();
+        for (int i=0; i < nThreads; i++) {
+            threads[i] = new RequestHandler();
             threads[i].start();
         }
     }
  
-    public void execute(Runnable r) {
+    public void execute(Socket acceptedSocket) {
         synchronized(queue) {
-            queue.addLast(r);
+            queue.addLast(acceptedSocket);
             queue.notify();
         }
     }
  
-    private class PoolWorker extends Thread 
+    private class RequestHandler extends Thread 
     {
         public void run() 
         {
-            Runnable r;
+            Socket socket;
  
             while (true) 
             {
@@ -49,13 +50,15 @@ public class RequestAcceptor
                         {
                         }
                     }
-                    r = (Runnable) queue.removeFirst();
+                    socket = (Socket) queue.removeFirst();
                 }
-                try {
-                    r.run();
-                }
-                catch (RuntimeException e) 
+                try 
                 {
+                	processor.processSocket(socket);
+                }
+                catch (Exception e) 
+                {
+                	e.printStackTrace();
                     System.err.println("Error executing task");
                 }
             }
