@@ -4,6 +4,7 @@ import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServlet;
 
 public class ServletWrapper implements ServletConfig 
 {
@@ -45,6 +46,18 @@ public class ServletWrapper implements ServletConfig
 	public String getServletClass() {
 		return servletClass;
 	}
-	
+
+	public HttpServlet getInstance() {
+		try
+		{
+			Class servletClazz = Class.forName(servletClass);
+			return (HttpServlet)servletClazz.getConstructor().newInstance();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 }
